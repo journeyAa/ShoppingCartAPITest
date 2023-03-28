@@ -1,0 +1,66 @@
+import org.testng.annotations.Test;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+
+public class ShoppingCartAPITest {
+  
+  @Test
+  public void testAddToCart() {
+    RestAssured.baseURI = "http://your-api-url.com";
+    RestAssured.given()
+      .contentType(ContentType.JSON)
+      .body("{ \"productId\": 123, \"quantity\": 2 }")
+      .when()
+      .post("/cart/add")
+      .then()
+      .statusCode(200)
+      .assertThat()
+      .body("success", equalTo(true))
+      .body("message", equalTo("Item added to cart successfully"));
+  }
+
+  @Test
+  public void testGetCartItems() {
+    RestAssured.baseURI = "http://your-api-url.com";
+    RestAssured.given()
+      .contentType(ContentType.JSON)
+      .when()
+      .get("/cart/items")
+      .then()
+      .statusCode(200)
+      .assertThat()
+      .body("items.size()", equalTo(1))
+      .body("items[0].productId", equalTo(123))
+      .body("items[0].quantity", equalTo(2));
+  }
+
+  @Test
+  public void testUpdateCartItem() {
+    RestAssured.baseURI = "http://your-api-url.com";
+    RestAssured.given()
+      .contentType(ContentType.JSON)
+      .body("{ \"productId\": 123, \"quantity\": 3 }")
+      .when()
+      .put("/cart/update")
+      .then()
+      .statusCode(200)
+      .assertThat()
+      .body("success", equalTo(true))
+      .body("message", equalTo("Item updated in cart successfully"));
+  }
+
+  @Test
+  public void testRemoveCartItem() {
+    RestAssured.baseURI = "http://your-api-url.com";
+    RestAssured.given()
+      .contentType(ContentType.JSON)
+      .body("{ \"productId\": 123 }")
+      .when()
+      .delete("/cart/remove")
+      .then()
+      .statusCode(200)
+      .assertThat()
+      .body("success", equalTo(true))
+      .body("message", equalTo("Item removed from cart successfully"));
+  }
+}
